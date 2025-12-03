@@ -1,6 +1,5 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const clackSound = document.getElementById("clack");
 const startBtn = document.getElementById("startBtn");
 const counterDiv = document.getElementById("counter");
 
@@ -35,7 +34,7 @@ function startSimulation(n) {
         if (!simulationFinished)
         {
             // Collisions
-            if (collisionType === 1 && bigPos <= smallPos + smallSize)
+            if (collisionType === 1 && bigPos <= smallPos)
             {
                 // block/block collision
                 const newSmallVelocity = ((smallVelocity + 2 * bigMass * bigVelocity) - bigMass * smallVelocity) / (bigMass + 1);
@@ -44,7 +43,7 @@ function startSimulation(n) {
                 bigVelocity = newBigVelocity;
                 collisionType = 2;
                 totalCollisions++;
-                clackSound.currentTime = 0;
+
                 playClack();
             }
             else if (collisionType === 2 && smallPos <= 0)
@@ -53,7 +52,7 @@ function startSimulation(n) {
                 smallVelocity = -smallVelocity;
                 collisionType = 1;
                 totalCollisions++;
-                clackSound.currentTime = 0;
+
                 playClack();
             }
 
