@@ -45,7 +45,7 @@ function startSimulation(n) {
                 collisionType = 2;
                 totalCollisions++;
                 clackSound.currentTime = 0;
-                clackSound.play();
+                playClack();
             }
             else if (collisionType === 2 && smallPos <= 0)
             {
@@ -54,7 +54,7 @@ function startSimulation(n) {
                 collisionType = 1;
                 totalCollisions++;
                 clackSound.currentTime = 0;
-                clackSound.play();
+                playClack();
             }
 
             // Stop condition: mark simulation finished
@@ -87,4 +87,21 @@ function startSimulation(n) {
     }
 
     step();
+}
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playClack() {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.01);
 }
