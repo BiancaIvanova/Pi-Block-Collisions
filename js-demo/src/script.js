@@ -271,10 +271,19 @@ function savePrecomputedCSV(positions)
 }
 
 async function showSplashText(piValue) {
-    const response = await fetch("resources/splashtext.txt");
-    const text = await response.text();
-    const lines = text.split("\n").filter(l => l.trim().length > 0);
-    const randomLine = lines[Math.floor(Math.random() * lines.length)];
+    // const response = await fetch("resources/splashtext.txt");
+    // const text = await response.text();
+    // const lines = text.split("\n").filter(l => l.trim().length > 0);
+    // const randomLine = lines[Math.floor(Math.random() * lines.length)];
+
+    const splashTexts = [
+        "Woah! Splashtext!",
+        "The most inefficient way to compute pi.",
+        "Spoken like a true engineer.",
+        "Momentum never lies.",
+        "Physics has entered the chat."
+    ];
+    const randomLine = splashTexts[Math.floor(Math.random() * splashTexts.length)];
 
     const splashContainer = document.getElementById("splashContainer");
     splashContainer.innerHTML = ""; // clear previous content
@@ -282,7 +291,7 @@ async function showSplashText(piValue) {
     // Title
     const title = document.createElement("h1");
     title.className = "splashTitle";
-    title.textContent = `π = ${piValue}`;
+    title.innerHTML = `<span class="pi-letter">π</span> = ${piValue}`;
     splashContainer.appendChild(title);
 
     // Subtitle
@@ -293,5 +302,5 @@ async function showSplashText(piValue) {
 
     setTimeout(() => {
         splashContainer.innerHTML = "";
-    }, 4000); // match animation duration
+    }, 3000); // match animation duration
 }

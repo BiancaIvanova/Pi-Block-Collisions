@@ -71,6 +71,7 @@ body {
     text-align: center;
     opacity: 0;
     animation: fadeInHoldOut 4s forwards;
+    color: rgb(26, 40, 97);
 }
 
 .splashSubtitle {
