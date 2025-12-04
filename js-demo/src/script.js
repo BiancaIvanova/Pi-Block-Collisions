@@ -30,13 +30,13 @@ function startSimulation(n)
 
     const smallSize = cssWidth / 500 * 30;
     const bigSize = cssWidth / 500 * 50;
-    const wallThickness = cssWidth / 500 * 5;
+    const wallThickness = cssWidth / 500 * 3;
 
     let smallVelocity = 0;
     let bigVelocity = -1;
 
-    let smallPos = 100;
-    let bigPos = 300;
+    let smallPos = cssWidth / 500 * 100;
+    let bigPos = cssWidth / 500 * 300;
 
     const dt = 0.05; // precompute time step
 
@@ -51,6 +51,9 @@ function startSimulation(n)
     let lastCollisionStep = 0;
     let stepCount = 0;
     finished = false;
+
+    smallMassDiv.textContent = `Small Block Mass: ${smallMass}`;
+    bigMassDiv.textContent = `Big Block Mass: ${bigMass}`;
 
     while (true) {
         let collisionOccurred = false;
@@ -123,31 +126,31 @@ function startSimulation(n)
     function smoothEase(t) {
         const t1 = 0.1;
         const t2 = 0.9;
+        const p0 = 0.1;
+        const p1 = 0.9;
+        const m0 = 1;  // slope at t1
+        const m1 = 1;  // slope at t2
 
         if (t <= t1) {
-            return t / t1 * 0.1; // linear start
+            return t / t1 * p0; // linear start
         } else if (t >= t2) {
-            return 0.9 + (t - t2) / (1 - t2) * 0.1; // linear end
+            return p1 + (t - t2) / (1 - t2) * (1 - p1); // linear end
         } else {
-            // middle quadratic: y = a*(t-t1)^2 + b*(t-t1) + c
-            const p0 = 0.1;  // y at t1
-            const p1 = 0.9;  // y at t2
-            const m0 = 1;    // slope at t1
-            const m1 = 1;    // slope at t2
-
             const dt = t2 - t1;
+            const tt = t - t1;
 
-            // solve a*(dt)^2 + b*dt + c = p1
-            // derivative: 2*a*(t-t1) + b = slope
-            // at t=t1: c = p0, b = m0
-            const c = p0;
-            const b = m0 * 0.8; // scale slope to fit middle duration
-            const a = (p1 - c - b*dt) / (dt*dt);
+            // y(0) = p0
+            // y(dt) = p1
+            // y'(0) = m0
+            // y'(dt) = m1
 
-            return a*(t - t1)**2 + b*(t - t1) + c;
+            const d = m0;
+            const b = (3*(p1 - p0) - (2*m0 + m1)*dt) / (dt*dt);
+            const a = (m1 - d - 3*b*dt) / (4*dt*dt*dt);
+
+            return a*tt**4 + b*tt**3 + d*tt + p0;
         }
     }
-
 
 
     // Precompute index mapping from linear frames to quadratic positions
@@ -180,19 +183,39 @@ function startSimulation(n)
             playClack(audioCtx);
         }
 
-        // draw blocks
+
+        // Draw everything
         ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+        // Wall with diagonal lines
+        const wallX = wallThickness*1.5;  // distance from left edge
+
+        // Diagonal hatch lines
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+        const hatchSpacing = 25; // spacing between lines
+        for (let y = 0; y < cssHeight; y += hatchSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(-5, y);
+            ctx.lineTo(wallX + wallThickness, y + wallThickness*2);
+            ctx.stroke();
+        }
+
+        // Wall
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, wallThickness, cssHeight);
+        ctx.fillRect(wallX*1.2, 0, wallThickness, cssHeight);
 
+        // Floor
         ctx.fillStyle = "rgb(124,127,135)";
-        ctx.fillRect(wallThickness, cssHeight - 19, cssWidth - wallThickness, 19);
+        ctx.fillRect(wallThickness + wallX*1.2, cssHeight - 19, cssWidth - wallThickness, 19);
 
-        ctx.fillStyle = "rgb(142, 158, 237)";
-        ctx.fillRect(sPos + wallThickness, cssHeight - smallSize - 20, smallSize, smallSize);
+        // Small block
+        ctx.fillStyle = "rgb(175,187,234)";
+        ctx.fillRect(sPos + wallThickness + wallX*1.2, cssHeight - smallSize - 20, smallSize, smallSize);
 
+        // Big block
         ctx.fillStyle = "rgb(42, 55, 122)";
-        ctx.fillRect(bPos + (bigSize/2) + wallThickness*2, cssHeight - bigSize - 20, bigSize, bigSize);
+        ctx.fillRect(bPos + (smallSize) + wallThickness + wallX*1.2, cssHeight - bigSize - 20, bigSize, bigSize);
 
         frame++;
         const delay = totalTime / frameCount;

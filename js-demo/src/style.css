@@ -1,16 +1,15 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Sora", sans-serif;
     text-align: left;
     margin: 50px;
 }
-
 
 #canvasWrapper {
     width: 80vw;
     border-radius: 5px;
     overflow: hidden;
     border: 1px solid #333;
-    background-color: #f0f0f0;
+    background-color: #f8f8f8;
     margin-top: 20px;
 }
 
@@ -23,4 +22,31 @@ body {
 #counter {
     font-size: 1.2em;
     margin-top: 10px;
+}
+
+#stats {
+    display: flex;
+    gap: 20px;
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
+.pi-letter {
+    font-family: "Playfair Display", serif;  /* a classy contrast to Sora */
+    font-weight: 700;
+    font-size: 1.3em;   /* slightly larger so it stands out */
+    margin-right: 7px;
+}
+
+#leftBand {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 25px;
+    height: 100vh;
+    background: rgb(26, 40, 97);
+}
+
+.pageContent {
+    margin-left: 20px;
 }

@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
 <head>
     <meta charset="UTF-8">
     <title>Pi Colliding Blocks Simulation</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Pi Colliding Blocks</h1>
-<div>
-    <label>Digits of Pi (n): <input type="number" id="digits" value="2" min="1"></label>
-    <button id="startBtn">Start Simulation</button>
-</div>
-<div id="counter">Collisions: 0</div>
-<div id="canvasWrapper">
-    <canvas id="canvas" width="600" height="200"></canvas>
+
+<div id="leftBand"></div>
+
+<div class="pageContent">
+    <h1><span class="pi-letter">π</span> Colliding Blocks</h1>
+
+    <div>
+        <label>Digits of Pi (n):
+            <input type="number" id="digits" value="1" min="1">
+        </label>
+        <button id="startBtn">Start Simulation</button>
+    </div>
+
+    <div id="counter">Collisions: 0</div>
+
+    <div id="canvasWrapper">
+        <canvas id="canvas" width="600" height="200"></canvas>
+    </div>
+
+    <div id="stats">
+        <div id="smallMassDiv"></div>
+        <div id="bigMassDiv"></div>
+    </div>
 </div>
 
 <script src="script.js"></script>
 </body>
+
 </html>
