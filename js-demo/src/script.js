@@ -30,7 +30,7 @@ function startSimulation(n)
     let collisionType = 1;
     let finished = false;
 
-    const extraTimeAfterLastClack = 10.0; // seconds to continue after last collision
+    const extraTimeAfterLastClack = 10.0;
     const extraSteps = Math.ceil(extraTimeAfterLastClack / dt);
 
     let lastCollisionStep = 0;
@@ -151,7 +151,7 @@ function startSimulation(n)
     {
         if (frame >= frameCount)
         {
-            counterDiv.textContent = `Total Collisions: ${positions[positions.length - 1][2]}`;
+            counterDiv.textContent = `Collisions: ${positions[positions.length - 1][2]}`;
             return;
         }
 
@@ -170,11 +170,14 @@ function startSimulation(n)
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, wallThickness, canvas.height);
 
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "rgb(124,127,135)";
+        ctx.fillRect(wallThickness, canvas.height - 19, canvas.width - wallThickness, 19);
+
+        ctx.fillStyle = "rgb(142, 158, 237)";
         ctx.fillRect(sPos + wallThickness, canvas.height - smallSize - 20, smallSize, smallSize);
 
-        ctx.fillStyle = "blue";
-        ctx.fillRect(bPos + (bigSize/2) + wallThickness, canvas.height - bigSize - 20, bigSize, bigSize);
+        ctx.fillStyle = "rgb(42, 55, 122)";
+        ctx.fillRect(bPos + (bigSize/2) + wallThickness*2, canvas.height - bigSize - 20, bigSize, bigSize);
 
         frame++;
         const delay = totalTime / frameCount;
