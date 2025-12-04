@@ -8,89 +8,137 @@ startBtn.addEventListener("click", () => {
     startSimulation(n);
 });
 
-function startSimulation(n) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+function startSimulation(n)
+{
     const bigMass = 100 ** (n - 1);
     const smallMass = 1;
-
-    let bigVelocity = -1;
-    let smallVelocity = 0;
-    let totalCollisions = 0;
-    let collisionType = 1;
-
-    let smallPos = 100;
-    let bigPos = 300;
 
     const smallSize = 30;
     const bigSize = 50;
 
-    let simulationFinished = false; // flag for finishing
+    let smallVelocity = 0;
+    let bigVelocity = -1;
 
-    function step() {
-        smallPos += smallVelocity;
-        bigPos += bigVelocity;
+    let smallPos = 100;
+    let bigPos = 300;
 
-        if (!simulationFinished)
+    const dt = 0.05; // precompute time step
+
+    const positions = [];
+    let totalCollisions = 0;
+    let collisionType = 1;
+    let finished = false;
+
+    while (!finished)
+    {
+        let nextSmallPos = smallPos + smallVelocity * dt;
+        let nextBigPos = bigPos + bigVelocity * dt;
+
+        if (collisionType === 2 && nextSmallPos <= 0)
         {
-            // Collisions
-            if (collisionType === 1 && bigPos <= smallPos)
-            {
-                // block/block collision
-                const newSmallVelocity = ((smallVelocity + 2 * bigMass * bigVelocity) - bigMass * smallVelocity) / (bigMass + 1);
-                const newBigVelocity = ((2 * smallVelocity - bigVelocity + bigMass * bigVelocity) / (bigMass + 1));
-                smallVelocity = newSmallVelocity;
-                bigVelocity = newBigVelocity;
-                collisionType = 2;
-                totalCollisions++;
+            // block/wall collision
+            const t = smallPos / Math.abs(smallVelocity);
+            smallPos = 0;
+            bigPos += bigVelocity * t;
+            smallVelocity = -smallVelocity;
+            collisionType = 1;
+            totalCollisions++;
+        }
+        else if (collisionType === 1 && nextBigPos <= nextSmallPos)
+        {
+            // block/block collision
+            const t = (bigPos - smallPos) / (smallVelocity - bigVelocity);
+            smallPos += smallVelocity * t;
+            bigPos += bigVelocity * t;
 
-                playClack();
-            }
-            else if (collisionType === 2 && smallPos <= 0)
-            {
-                // block/wall collision
-                smallVelocity = -smallVelocity;
-                collisionType = 1;
-                totalCollisions++;
+            const newSmallVelocity = ((smallVelocity + 2 * bigMass * bigVelocity) - bigMass * smallVelocity) / (bigMass + 1);
+            const newBigVelocity = ((2 * smallVelocity - bigVelocity + bigMass * bigVelocity) / (bigMass + 1));
+            smallVelocity = newSmallVelocity;
+            bigVelocity = newBigVelocity;
 
-                playClack();
-            }
-
-            // Stop condition: mark simulation finished
-            if (bigVelocity >= 0 && smallVelocity >= 0 && bigVelocity > smallVelocity) {
-                simulationFinished = true;
-                counterDiv.textContent = `Total Collisions: ${totalCollisions}`;
-            } else {
-                counterDiv.textContent = `Collisions: ${totalCollisions}`;
-            }
+            collisionType = 2;
+            totalCollisions++;
+        }
+        else
+        {
+            smallPos = nextSmallPos;
+            bigPos = nextBigPos;
         }
 
-        draw();
-        requestAnimationFrame(step);
+        if (bigVelocity >= 0 && smallVelocity >= 0 && bigVelocity > smallVelocity) {
+            finished = true;
+        }
+
+        positions.push([smallPos, bigPos, totalCollisions]);
     }
 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log("Precomputed positions:", positions);
 
-        // wall
+    // save csv
+    savePrecomputedCSV(positions);
+
+    // PLAYBACK
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const totalTime = 5000; // total simulation time in ms
+    const frameCount = 600; // total frames to render
+
+    // quadratic ease-in-ease-out mapping function
+    function easeInOutQuad(t) {
+        return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
+    }
+
+    // Precompute index mapping from linear frames to quadratic positions
+    const maxIdx = positions.length - 1;
+    const frameIndices = [];
+    for (let i = 0; i < frameCount; i++) {
+        const t = i / (frameCount - 1);           // normalized 0..1
+        const eased = easeInOutQuad(t);          // quadratic ease-in-ease-out
+        const idx = Math.floor(eased * maxIdx);  // map to CSV index
+        frameIndices.push(idx);
+    }
+
+    let frame = 0;
+
+    function drawStep() {
+        if (frame >= frameCount)
+        {
+            counterDiv.textContent = `Total Collisions: ${positions[positions.length - 1][2]}`;
+            return;
+        }
+
+        const idx = frameIndices[frame];
+        const [sPos, bPos, collisions] = positions[idx];
+        counterDiv.textContent = `Collisions: ${collisions}`;
+
+        // only play clack if a collision occurred in the previous frame
+        if (frame > 0 && collisions > positions[frameIndices[frame - 1]][2])
+        {
+            playClack(audioCtx);
+        }
+
+        // draw blocks
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, 5, canvas.height);
 
-        // small block
         ctx.fillStyle = "red";
-        ctx.fillRect(smallPos, canvas.height - smallSize - 20, smallSize, smallSize);
+        ctx.fillRect(sPos, canvas.height - smallSize - 20, smallSize, smallSize);
 
-        // big block
         ctx.fillStyle = "blue";
-        ctx.fillRect(bigPos, canvas.height - bigSize - 20, bigSize, bigSize);
+        ctx.fillRect(bPos, canvas.height - bigSize - 20, bigSize, bigSize);
+
+        frame++;
+        const delay = totalTime / frameCount;
+        setTimeout(() => requestAnimationFrame(drawStep), delay);
     }
 
-    step();
+    drawStep();
+
 }
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playClack() {
+function playClack(audioCtx)
+{
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -103,4 +151,26 @@ function playClack() {
 
     oscillator.start();
     oscillator.stop(audioCtx.currentTime + 0.01);
+}
+
+
+function savePrecomputedCSV(positions)
+{
+    let csvContent = "smallPos,bigPos,totalCollisions\n";
+
+    positions.forEach(row => {
+        csvContent += row.join(",") + "\n";
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const dlAnchor = document.createElement("a");
+
+    dlAnchor.href = url;
+    dlAnchor.download = "precomputed_simulation.csv";
+
+    document.body.appendChild(dlAnchor);
+
+    dlAnchor.click();
+    dlAnchor.remove();
 }
