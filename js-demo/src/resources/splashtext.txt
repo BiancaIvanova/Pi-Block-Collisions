@@ -1,3 +1,5 @@
 Woah! Splashtext!
 The most inefficient way to compute pi.
 Spoken like a true engineer.
+Momentum never lies.
+Physics has entered the chat.
