@@ -82,3 +82,17 @@ body {
     text-align: center;
 }
 
+#github-link {
+    position: fixed;   /* so it floats over the page */
+    bottom: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    z-index: 1000;
+}
+
+#github-link img {
+    width: 100%;
+    height: 100%;
+    transition: filter 0.3s ease-in-out;
+}
