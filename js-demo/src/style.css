@@ -50,3 +50,35 @@ body {
 .pageContent {
     margin-left: 20px;
 }
+
+#splashContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.splashTitle {
+    position: absolute;
+    font-weight: 700;
+    font-size: 3em;
+    color: #2a376a;
+    transform-origin: center center;
+    text-align: center;
+}
+
+.splashSubtitle {
+    position: absolute;
+    font-weight: 400;
+    font-size: 1.5em;
+    color: #5a5a5a;
+    text-align: center;
+}
+

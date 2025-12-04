@@ -172,6 +172,9 @@ function startSimulation(n)
         if (frame >= frameCount)
         {
             counterDiv.textContent = `Collisions: ${positions[positions.length - 1][2]}`;
+
+            let computedPi = (positions[positions.length - 1][2]) / (n-1);
+            showSplashText(computedPi);
             return;
         }
 
@@ -266,3 +269,41 @@ function savePrecomputedCSV(positions)
     dlAnchor.click();
     dlAnchor.remove();
 }
+
+async function showSplashText(piValue)
+{
+    // Fetch random line from splashtext.txt
+    const response = await fetch("resources/splashtext.txt");
+    const text = await response.text();
+    const lines = text.split("\n").filter(l => l.trim().length > 0);
+    const randomLine = lines[Math.floor(Math.random() * lines.length)];
+
+    const splashContainer = document.getElementById("splashContainer");
+
+    const maxOffsetX = window.innerWidth * 0.6;
+    const maxOffsetY = window.innerHeight * 0.6;
+
+    // Random position roughly in the center
+    const posX = window.innerWidth * 0.2 + Math.random() * maxOffsetX;
+    const posY = window.innerHeight * 0.2 + Math.random() * maxOffsetY;
+
+    const rotation = (Math.random() - 0.5) * 15; // slight rotation
+
+    // Create title
+    const title = document.createElement("h1");
+    title.className = "splashTitle";
+    title.textContent = `π = ${piValue}`;
+    title.style.top = `${posY}px`;
+    title.style.left = `${posX}px`;
+    title.style.transform = `rotate(${rotation}deg)`;
+    splashContainer.appendChild(title);
+
+    // Create subtitle
+    const subtitle = document.createElement("div");
+    subtitle.className = "splashSubtitle";
+    subtitle.textContent = randomLine;
+    subtitle.style.top = `${posY + 60}px`; // below title
+    subtitle.style.left = `${posX}px`;
+    splashContainer.appendChild(subtitle);
+}
+
