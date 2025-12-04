@@ -10,12 +10,27 @@ startBtn.addEventListener("click", () => {
 
 function startSimulation(n)
 {
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const cssWidth = window.innerWidth * 0.8;
+    const cssHeight = cssWidth / 3;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+
+    canvas.style.width = cssWidth + "px";
+    canvas.style.height = cssHeight + "px";
+
+    ctx.scale(dpr, dpr);
+
     const bigMass = 100 ** (n - 1);
     const smallMass = 1;
 
-    const smallSize = 30;
-    const bigSize = 50;
-    const wallThickness = 5;
+    const smallSize = cssWidth / 500 * 30;
+    const bigSize = cssWidth / 500 * 50;
+    const wallThickness = cssWidth / 500 * 5;
 
     let smallVelocity = 0;
     let bigVelocity = -1;
@@ -166,18 +181,18 @@ function startSimulation(n)
         }
 
         // draw blocks
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, wallThickness, canvas.height);
+        ctx.fillRect(0, 0, wallThickness, cssHeight);
 
         ctx.fillStyle = "rgb(124,127,135)";
-        ctx.fillRect(wallThickness, canvas.height - 19, canvas.width - wallThickness, 19);
+        ctx.fillRect(wallThickness, cssHeight - 19, cssWidth - wallThickness, 19);
 
         ctx.fillStyle = "rgb(142, 158, 237)";
-        ctx.fillRect(sPos + wallThickness, canvas.height - smallSize - 20, smallSize, smallSize);
+        ctx.fillRect(sPos + wallThickness, cssHeight - smallSize - 20, smallSize, smallSize);
 
         ctx.fillStyle = "rgb(42, 55, 122)";
-        ctx.fillRect(bPos + (bigSize/2) + wallThickness*2, canvas.height - bigSize - 20, bigSize, bigSize);
+        ctx.fillRect(bPos + (bigSize/2) + wallThickness*2, cssHeight - bigSize - 20, bigSize, bigSize);
 
         frame++;
         const delay = totalTime / frameCount;

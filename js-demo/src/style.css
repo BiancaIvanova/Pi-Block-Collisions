@@ -1,13 +1,23 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 20px;
+    text-align: left;
+    margin: 50px;
 }
 
-canvas {
+
+#canvasWrapper {
+    width: 80vw;
+    border-radius: 5px;
+    overflow: hidden;
     border: 1px solid #333;
     background-color: #f0f0f0;
     margin-top: 20px;
+}
+
+#canvasWrapper canvas {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 #counter {
