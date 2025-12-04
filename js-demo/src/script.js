@@ -115,8 +115,10 @@ function startSimulation(n)
 
     console.log("Precomputed positions:", positions);
 
-    // save csv
-    savePrecomputedCSV(positions);
+    // Save csv if the box is checked
+    if (document.getElementById("downloadRaw").checked) {
+        savePrecomputedCSV(positions);
+    }``
 
     // PLAYBACK
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
