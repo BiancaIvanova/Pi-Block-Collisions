@@ -173,7 +173,7 @@ function startSimulation(n)
         {
             counterDiv.textContent = `Collisions: ${positions[positions.length - 1][2]}`;
 
-            let computedPi = (positions[positions.length - 1][2]) / (n-1);
+            let computedPi = positions[positions.length - 1][2] / (10 ** (n - 1));
             showSplashText(computedPi);
             return;
         }
@@ -270,9 +270,7 @@ function savePrecomputedCSV(positions)
     dlAnchor.remove();
 }
 
-async function showSplashText(piValue)
-{
-    // Fetch random line from splashtext.txt
+async function showSplashText(piValue) {
     const response = await fetch("resources/splashtext.txt");
     const text = await response.text();
     const lines = text.split("\n").filter(l => l.trim().length > 0);
@@ -281,21 +279,19 @@ async function showSplashText(piValue)
     const splashContainer = document.getElementById("splashContainer");
     splashContainer.innerHTML = ""; // clear previous content
 
-    // Create title
+    // Title
     const title = document.createElement("h1");
     title.className = "splashTitle";
     title.textContent = `π = ${piValue}`;
     splashContainer.appendChild(title);
 
-    // Create subtitle
+    // Subtitle
     const subtitle = document.createElement("div");
     subtitle.className = "splashSubtitle";
     subtitle.textContent = randomLine;
     splashContainer.appendChild(subtitle);
 
-    // Remove splash after animation
     setTimeout(() => {
         splashContainer.innerHTML = "";
     }, 4000); // match animation duration
 }
-
